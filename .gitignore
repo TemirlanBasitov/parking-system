@@ -1,0 +1,13 @@
+.DS_Store
+.idea/
+
+.env
+backend/.env
+
+node_modules/
+backend/node_modules/
+
+dist/
+backend/dist/
+
+coverage/
