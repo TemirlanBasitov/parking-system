@@ -1,27 +1,14 @@
 import "dotenv/config";
 
-import { Pool } from "pg";
 import { createApp } from "./app.js";
+import { pool } from "./db.js";
 
 const port = Number(process.env.PORT ?? 3000);
-const databaseUrl = process.env.DATABASE_URL;
-
-if (!databaseUrl) {
-    throw new Error("DATABASE_URL is required. Copy .env.example to .env.");
-}
-
-const pool = new Pool({ connectionString: databaseUrl });
 
 async function start() {
-    const client = await pool.connect();
+    await pool.query("SELECT 1");
 
-    try {
-        await client.query("SELECT 1");
-    } finally {
-        client.release();
-    }
-
-    const app = createApp();
+    const app = createApp(pool);
 
     app.listen(port, () => {
         console.log(`Parking backend is running on http://localhost:${port}`);

@@ -2,8 +2,8 @@
 
 An educational client-server application for paid parking.
 
-Drivers will be able to manage vehicle numbers, reserve places, enter and exit
-through a simulated barrier, and view parking visits and invoices.
+Drivers can manage vehicle numbers, reserve places, enter and exit through a
+simulated barrier, and view parking visits and invoices.
 
 ## Stack
 
@@ -12,23 +12,28 @@ through a simulated barrier, and view parking visits and invoices.
 - Local database: Docker Compose
 - Frontend: planned — React or Vue
 - Real-time updates: planned — Socket.IO
+- Authentication: email/password and JWT Bearer tokens
 
 ## Current project state
 
 Implemented:
 
 - PostgreSQL Docker Compose configuration;
-- initial database schema;
-- ten seeded parking spaces;
-- backend database connection check;
-- `GET /api/health`;
+- initial database schema and ten seeded parking spaces;
+- backend health endpoint: `GET /api/health`;
+- driver registration: `POST /api/auth/register`;
+- driver login: `POST /api/auth/login`;
+- authenticated profile endpoint: `GET /api/account/profile`;
+- authenticated add/list vehicle endpoints:
+  `POST /api/account/vehicles` and `GET /api/account/vehicles`;
+- password hashing with bcrypt;
+- JWT access tokens;
 - TypeScript and HTTP smoke checks.
 
 Not implemented yet:
 
-- authentication and driver profile;
-- vehicle-management endpoints;
-- reservation endpoints;
+- parking-map endpoint;
+- reservation creation and cancellation;
 - barrier simulator;
 - tariff and invoice calculation;
 - reservation expiration and email reminder;
@@ -47,17 +52,3 @@ Start PostgreSQL from the repository root:
 
 ```zsh
 docker compose up -d
-
-Install dependencies and create local environment configuration:
-
-cd backend
-npm install
-cp .env.example .env
-
-Run validation:
-
-npm run typecheck
-npm run smoke
-
-Start the backend:
-npm run dev

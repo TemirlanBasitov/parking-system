@@ -1,6 +1,9 @@
-import { createApp } from "./app.js";
+import "dotenv/config";
 
-const app = createApp();
+import { createApp } from "./app.js";
+import { pool } from "./db.js";
+
+const app = createApp(pool);
 
 const server = app.listen(0, "127.0.0.1", async () => {
     try {
@@ -23,5 +26,6 @@ const server = app.listen(0, "127.0.0.1", async () => {
         console.log("Smoke check passed: GET /api/health returned status=ok.");
     } finally {
         server.close();
+        await pool.end();
     }
 });
