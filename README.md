@@ -29,13 +29,16 @@ Implemented:
 - password hashing with bcrypt;
 - JWT access tokens;
 - TypeScript and HTTP smoke checks.
+- - parking map endpoint: `GET /api/parking/map`;
+- authenticated reservation list/create/cancel endpoints;
+- PostgreSQL exclusion constraint preventing overlapping booked reservations;
+- barrier simulator entry with reserved-space claim or automatic allocation;
+- barrier simulator exit with day/night tariff invoice calculation;
+- authenticated parking visit and invoice history endpoint;
+- active-visit uniqueness safeguards for both vehicle plates and parking spots;
 
 Not implemented yet:
 
-- parking-map endpoint;
-- reservation creation and cancellation;
-- barrier simulator;
-- tariff and invoice calculation;
 - reservation expiration and email reminder;
 - real-time updates;
 - frontend.

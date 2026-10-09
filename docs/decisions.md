@@ -20,9 +20,10 @@ database level, including simultaneous requests from two browser clients.
 
 ## 2026-10-06 — Money and time
 
-All timestamps are stored as `TIMESTAMPTZ`. All money is stored as integer
-kopeks, never as floating-point values. This prevents lost fractional amounts
-when calculating invoices across day/night tariff boundaries.
+All timestamps are stored as `TIMESTAMPTZ`. All monetary values are stored as
+integer som, never as floating-point values. Tariff rates are integer som per
+minute and completed visit invoices are stored as integer som. This prevents
+fractional rounding errors during billing across day/night tariff boundaries.
 
 ## 2026-10-06 — External email service
 

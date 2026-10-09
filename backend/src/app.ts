@@ -3,6 +3,8 @@ import express, { type NextFunction, type Request, type Response } from "express
 import type { Pool } from "pg";
 import { registerAccountRoutes } from "./routes/account.js";
 import { registerAuthRoutes } from "./routes/auth.js";
+import { registerBarrierRoutes } from "./routes/barrier.js";
+import { registerParkingRoutes } from "./routes/parking.js";
 
 export function createApp(pool: Pool) {
     const app = express();
@@ -25,6 +27,14 @@ export function createApp(pool: Pool) {
     const accountRouter = express.Router();
     registerAccountRoutes(accountRouter, pool);
     app.use("/api/account", accountRouter);
+
+    const parkingRouter = express.Router();
+    registerParkingRoutes(parkingRouter, pool);
+    app.use("/api/parking", parkingRouter);
+
+    const barrierRouter = express.Router();
+    registerBarrierRoutes(barrierRouter, pool);
+    app.use("/api/barrier", barrierRouter);
 
     app.use(
         (
