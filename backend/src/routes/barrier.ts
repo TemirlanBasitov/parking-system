@@ -1,5 +1,6 @@
 import type { Router } from "express";
 import type { Pool, PoolClient } from "pg";
+import { calculateInvoiceAmount } from "../services/tariff.js";
 import { z } from "zod";
 import {
     requireAuth,
@@ -10,7 +11,6 @@ const plateSchema = z.object({
     plate: z.string().trim().min(2).max(16)
 });
 
-const PARKING_TIME_ZONE = "Asia/Bishkek";
 
 function normalizePlate(plate: string): string {
     return plate.trim().toUpperCase().replace(/\s+/g, " ");
@@ -27,53 +27,6 @@ function postgresErrorCode(error: unknown): string | undefined {
     }
 
     return undefined;
-}
-
-function getLocalTime(date: Date): string {
-    const parts = new Intl.DateTimeFormat("en-GB", {
-        timeZone: PARKING_TIME_ZONE,
-        hour: "2-digit",
-        minute: "2-digit",
-        hourCycle: "h23"
-    }).formatToParts(date);
-
-    const hour = parts.find((part) => part.type === "hour")?.value ?? "00";
-    const minute = parts.find((part) => part.type === "minute")?.value ?? "00";
-
-    return `${hour}:${minute}`;
-}
-
-function calculateInvoiceAmount(
-    enteredAt: Date,
-    exitedAt: Date,
-    dayRateSomPerMinute: number,
-    nightRateSomPerMinute: number,
-    dayStartsAt: string,
-    nightStartsAt: string
-): { durationMinutes: number; totalAmountSom: number } {
-    const durationMs = Math.max(0, exitedAt.getTime() - enteredAt.getTime());
-
-    // Parking charges at least one started minute.
-    const durationMinutes = Math.max(1, Math.ceil(durationMs / 60_000));
-
-    let totalAmountSom = 0;
-
-    for (let minute = 0; minute < durationMinutes; minute += 1) {
-        const currentMinute = new Date(enteredAt.getTime() + minute * 60_000);
-        const localTime = getLocalTime(currentMinute);
-
-        const isDayRate =
-            localTime >= dayStartsAt && localTime < nightStartsAt;
-
-        totalAmountSom += isDayRate
-            ? dayRateSomPerMinute
-            : nightRateSomPerMinute;
-    }
-
-    return {
-        durationMinutes,
-        totalAmountSom
-    };
 }
 
 async function rollbackQuietly(client: PoolClient): Promise<void> {
@@ -379,10 +332,12 @@ export function registerBarrierRoutes(router: Router, pool: Pool) {
                 const invoice = calculateInvoiceAmount(
                     visit.entered_at,
                     exitedAt,
-                    tariff.day_rate_som_per_minute,
-                    tariff.night_rate_som_per_minute,
-                    tariff.day_starts_at.slice(0, 5),
-                    tariff.night_starts_at.slice(0, 5)
+                    {
+                        dayRateSomPerMinute: tariff.day_rate_som_per_minute,
+                        nightRateSomPerMinute: tariff.night_rate_som_per_minute,
+                        dayStartsAt: tariff.day_starts_at,
+                        nightStartsAt: tariff.night_starts_at
+                    }
                 );
 
                 await client.query(

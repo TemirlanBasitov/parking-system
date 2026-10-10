@@ -28,18 +28,22 @@ Implemented:
   `POST /api/account/vehicles` and `GET /api/account/vehicles`;
 - password hashing with bcrypt;
 - JWT access tokens;
-- TypeScript and HTTP smoke checks.
-- - parking map endpoint: `GET /api/parking/map`;
+- TypeScript and HTTP smoke checks.- TypeScript and HTTP smoke checks;
+- parking map endpoint: `GET /api/parking/map`;
 - authenticated reservation list/create/cancel endpoints;
 - PostgreSQL exclusion constraint preventing overlapping booked reservations;
 - barrier simulator entry with reserved-space claim or automatic allocation;
 - barrier simulator exit with day/night tariff invoice calculation;
 - authenticated parking visit and invoice history endpoint;
 - active-visit uniqueness safeguards for both vehicle plates and parking spots;
+- - day/night tariff calculation with Asia/Bishkek time boundaries;
+- tariff boundary smoke checks;
+- scheduled expiration of unused past reservations;
+- one-hour reservation reminder background task;
+- development email notification stub written to backend logs;
 
 Not implemented yet:
 
-- reservation expiration and email reminder;
 - real-time updates;
 - frontend.
 
